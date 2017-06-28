@@ -1,4 +1,4 @@
-package com.example.bryanyen.goldcompassapplication;
+package com.example.bryanyen.godcompassapplication;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -11,6 +11,8 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.bryanyen.goldcompassapplication.R;
 
 import java.util.Date;
 
