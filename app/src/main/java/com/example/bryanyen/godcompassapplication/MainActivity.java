@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         TextView whereGoldTextView = (TextView) findViewById(R.id.textView4);
         whereGoldTextView.setText("財神方位: " + whereGold);
 
-        calculateOrientation();
+        calculationOrientation();
 
     }
 
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         //        sensorManager.registerListener(sensorEventListener, orientationSensor, SensorManager
         // .SENSOR_DELAY_NORMAL);
 
-        calculateOrientation();
+        calculationOrientation();
     }
 
     public void onPause() {
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 accelerometerValues = sensorEvent.values;
             }
 
-            calculateOrientation();
+            calculationOrientation();
         }
 
         @Override
@@ -110,22 +111,25 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void compassImageAnimation(float degree) {
-        if (currentDegree != -degree) {
-            RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
-                    Animation.RELATIVE_TO_SELF, 0.5f);
-            ra.setRepeatCount(RotateAnimation.INFINITE);
-            ra.setDuration(1200);        // 動畫旋轉持續時間ms
-            ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
-            imageView.startAnimation(ra);
-            currentDegree = -degree;
-        }
+
+        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        ra.setDuration(200);        // 動畫旋轉持續時間ms
+        ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
+
+        LinearInterpolator linearInterpolator = new LinearInterpolator();   // 建立線性旋轉
+        ra.setInterpolator(linearInterpolator);
+
+        imageView.startAnimation(ra);
+        currentDegree = -degree;
+
     }
 
-    private void calculateOrientation() {
+    private void calculationOrientation() {
         float[] values = new float[3];
-        float[] R = new float[9];
-        SensorManager.getRotationMatrix(R, null, accelerometerValues, magneticFieldValues);
-        SensorManager.getOrientation(R, values);
+        float[] rotation = new float[9];
+        SensorManager.getRotationMatrix(rotation, null, accelerometerValues, magneticFieldValues);
+        SensorManager.getOrientation(rotation, values);
 
         // 極座標轉度
         values[0] = (float) Math.toDegrees(values[0]);
@@ -173,10 +177,10 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(compressText);
 
         compassImageAnimation(values[0]);
-        goldImageShow(compressText, values[0]);
+        godImageShow(compressText, values[0]);
     }
 
-    private void goldImageShow(String compress, float value) {
+    private void godImageShow(String compress, float value) {
         if (compress.length() == 1) {
             compress = "正" + compress;
         }
