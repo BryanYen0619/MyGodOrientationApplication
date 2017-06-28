@@ -12,8 +12,6 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.bryanyen.goldcompassapplication.R;
-
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,9 +26,12 @@ public class MainActivity extends AppCompatActivity {
 
     private Sensor accelerometerSensor;
     private Sensor magneticFieldSensor;
+    //    private Sensor orientationSensor;
 
     private float[] accelerometerValues = new float[3];
     private float[] magneticFieldValues = new float[3];
+    //    private float[] orientationValues = new float[3];
+
     private float currentDegree = 0f;
 
     private String whereGold;
@@ -50,10 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticFieldSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        //        orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 
 
         GoldDate goldDate = new GoldDate(new Date());
-        //        Log.d(TAG, "date :" + goldDate.getLunarDate());
+        //                Log.d(TAG, "date :" + goldDate.getLunarDate());
         //        Log.d(TAG, "date :" + goldDate.getLunarDay());
         whereGold = goldDate.getMoneyGodData(getApplication());
         //        Log.d(TAG, "gold :" + whereGold);
@@ -71,8 +73,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, magneticFieldSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, accelerometerSensor, SensorManager
+                .SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, magneticFieldSensor, SensorManager
+                .SENSOR_DELAY_NORMAL);
+        //        sensorManager.registerListener(sensorEventListener, orientationSensor, SensorManager
+        // .SENSOR_DELAY_NORMAL);
 
         calculateOrientation();
     }
@@ -161,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         //        Log.i(TAG, compressText);
         textView.setText(compressText);
 
-        compassImageAnimation(-values[0]);
+        compassImageAnimation(values[0]);
         goldImageShow(compressText, values[0]);
     }
 
