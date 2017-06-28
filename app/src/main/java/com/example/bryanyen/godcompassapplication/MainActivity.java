@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         imageView = (ImageView) findViewById(R.id.imageView);
+        imageView.setDrawingCacheEnabled(true);
+
         startImageView = (ImageView) findViewById(R.id.imageView3);
 
         textView = (TextView) findViewById(R.id.textView);
@@ -108,12 +110,15 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void compassImageAnimation(float degree) {
-        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f);
-        ra.setDuration(200);        // 動畫旋轉持續時間ms
-        ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
-        imageView.startAnimation(ra);
-        currentDegree = -degree;
+        if (currentDegree != -degree) {
+            RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
+                    Animation.RELATIVE_TO_SELF, 0.5f);
+            ra.setRepeatCount(RotateAnimation.INFINITE);
+            ra.setDuration(1200);        // 動畫旋轉持續時間ms
+            ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
+            imageView.startAnimation(ra);
+            currentDegree = -degree;
+        }
     }
 
     private void calculateOrientation() {
@@ -172,6 +177,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goldImageShow(String compress, float value) {
+        if (compress.length() == 1) {
+            compress = "正" + compress;
+        }
         if (compress.equals(whereGold)) {
 
             startImageView.setVisibility(View.VISIBLE);
