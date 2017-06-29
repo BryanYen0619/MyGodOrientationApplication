@@ -1,4 +1,4 @@
-# MyGodCompassApplication
+# MyGodOrientationApplication
 指南針顯示財神方位
 
 **# 簡介**     
