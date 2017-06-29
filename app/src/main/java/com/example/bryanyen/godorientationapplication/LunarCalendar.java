@@ -1,12 +1,5 @@
 package com.example.bryanyen.godorientationapplication;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -336,48 +329,7 @@ public class LunarCalendar {
         convert();
     }
 
-
-    /**
-     * 從DB取得今日財神方位
-     * <p>
-     * DB資料來源：http://www.fushantang.com/1013/m1006.html
-     */
-    public String getMoneyGodData(Context mContext) {
-        final String TABLE_NAME = "lushData";
-        final String DATE_TABLE_NAME = "lushDay";
-        final String MONEY_DOD_TABLE_NAME = "moneyGodOrientation";
-        try {
-            DataBaseHelper mDbHelper = new DataBaseHelper(mContext);
-            mDbHelper.createDataBase();
-            mDbHelper.openDataBase();
-            SQLiteDatabase mDb = mDbHelper.getReadableDatabase();
-
-            String sql = "SELECT " + DATE_TABLE_NAME + "," + MONEY_DOD_TABLE_NAME +
-                    " FROM " + TABLE_NAME +
-                    " WHERE " + DATE_TABLE_NAME + " IN('" + cyclical(result[6]) + "')";
-
-            Cursor mCur = mDb.rawQuery(sql, null);
-            if (mCur != null) {
-                mCur.moveToNext();
-            }
-
-            String moneyGodPosition = "";
-            if (mCur != null) {
-                moneyGodPosition = mCur.getString(mCur.getColumnIndex(MONEY_DOD_TABLE_NAME));
-                mCur.close();
-            }
-
-            mDbHelper.close();
-
-            return moneyGodPosition;
-        } catch (SQLException mSQLException) {
-            Log.e(TAG, "getTestData >>" + mSQLException.toString());
-            throw mSQLException;
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, e.toString() + "  UnableToCreateDatabase");
-        }
-
-        return "";
+    public String getLunarMonthOfDay() {
+        return cyclical(result[6]);
     }
 }

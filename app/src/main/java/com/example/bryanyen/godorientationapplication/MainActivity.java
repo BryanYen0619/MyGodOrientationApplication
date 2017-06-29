@@ -56,14 +56,14 @@ public class MainActivity extends AppCompatActivity {
         mMagneticFieldSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
         LunarCalendar lunarCalendar = new LunarCalendar(new Date());
-        godOrientation = lunarCalendar.getMoneyGodData(getApplication());
+        godOrientation = DataBaseHelper.getMoneyGodData(getApplication(), lunarCalendar.getLunarMonthOfDay());
 
         textView.setText(lunarCalendar.getLunarDate());
         whereGoldTextView.setText("財神方位: " + godOrientation);
         mCompassImageView.setDrawingCacheEnabled(true);
 
-        mAlphaInAnimation = AnimationUtils.loadAnimation(this, R.anim.solid_in);
-        mAlphaOutAnimation = AnimationUtils.loadAnimation(this, R.anim.solid_out);
+        mAlphaInAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
+        mAlphaOutAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_out);
 
         getCompassOrientation();
 
@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mMoneyGodImageView.setVisibility(View.INVISIBLE);
+        mMoneyGodImageView.clearAnimation();
         //        Log.i(TAG, compassOrientation);
         mOrientationTextView.setText(compassOrientation);
 
