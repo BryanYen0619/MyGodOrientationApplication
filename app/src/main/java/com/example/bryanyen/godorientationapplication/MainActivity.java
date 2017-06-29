@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         whereGoldTextView.setText("財神方位: " + godOrientation);
         mCompassImageView.setDrawingCacheEnabled(true);
 
-//        mAlphaInAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
+        //        mAlphaInAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
         mAlphaOutAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_out);
 
         getCompassOrientation();
