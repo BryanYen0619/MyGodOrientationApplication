@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         whereGoldTextView.setText("財神方位: " + godOrientation);
         mCompassImageView.setDrawingCacheEnabled(true);
 
-        mAlphaInAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
+//        mAlphaInAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
         mAlphaOutAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_out);
 
         getCompassOrientation();
@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mMoneyGodImageView.setVisibility(View.INVISIBLE);
-        mMoneyGodImageView.clearAnimation();
         //        Log.i(TAG, compassOrientation);
         mOrientationTextView.setText(compassOrientation);
 
@@ -200,11 +199,11 @@ public class MainActivity extends AppCompatActivity {
         if (compress.equals(godOrientation)) {
             mMoneyGodImageView.setVisibility(View.VISIBLE);
 
-            if (value < maxValue - 10) {
-                mMoneyGodImageView.startAnimation(mAlphaInAnimation);
+            if (value < maxValue - 1) {
+                mMoneyGodImageView.startAnimation(mAlphaOutAnimation);
             }
 
-            if (value > maxValue + 10) {
+            if (value > maxValue + 1) {
                 mMoneyGodImageView.startAnimation(mAlphaOutAnimation);
             }
         }
