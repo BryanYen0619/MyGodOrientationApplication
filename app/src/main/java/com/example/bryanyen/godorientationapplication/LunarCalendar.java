@@ -1,4 +1,4 @@
-package com.example.bryanyen.godcompassapplication;
+package com.example.bryanyen.godorientationapplication;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -18,7 +18,7 @@ import java.util.Locale;
  * 農曆計算工具
  */
 
-public class GoldDate {
+public class LunarCalendar {
 
     private static final String TAG = "godData";
 
@@ -63,12 +63,12 @@ public class GoldDate {
     private static String[] monthNong = {"正", "正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"};
     private static String[] yearName = {"零", "壹", "貳", "叁", "肆", "伍", "陸", "柒", "捌", "玖"};
 
-    public GoldDate() {
+    public LunarCalendar() {
         this.calendar = Calendar.getInstance(Locale.SIMPLIFIED_CHINESE);
         convert();// 轉換日期
     }
 
-    public GoldDate(int year, int month, int day) {
+    public LunarCalendar(int year, int month, int day) {
         calendar = Calendar.getInstance();
         calendar.set(year, month - 1, day);
         convert();// 轉換日期
@@ -81,19 +81,19 @@ public class GoldDate {
      * @param hourOfDay 24小時制(0-23)
      * @param minute    分鐘
      */
-    public GoldDate(int year, int month, int day, int hourOfDay, int minute) {
+    public LunarCalendar(int year, int month, int day, int hourOfDay, int minute) {
         calendar = Calendar.getInstance();
         calendar.set(year, month - 1, day, hourOfDay, minute);
         convert();// 轉換日期
     }
 
-    public GoldDate(Date date) {
+    public LunarCalendar(Date date) {
         calendar = Calendar.getInstance();
         calendar.setTime(date);
         convert();// 轉換日期
     }
 
-    public GoldDate(Calendar calendar) {
+    public LunarCalendar(Calendar calendar) {
         this.calendar = calendar;
         convert();// 轉換日期
     }

@@ -1,4 +1,4 @@
-package com.example.bryanyen.godcompassapplication;
+package com.example.bryanyen.godorientationapplication;
 
 import android.content.Context;
 import android.database.SQLException;
