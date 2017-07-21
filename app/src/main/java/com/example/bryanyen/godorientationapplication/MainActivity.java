@@ -13,6 +13,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Date;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mCompassImageView;
     private ImageView mMoneyGodImageView;
     private TextView mOrientationTextView;
+    private RelativeLayout mWordConstraintLayout;
 
     private SensorManager mSensorManager;
 
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         mOrientationTextView = (TextView) findViewById(R.id.textView);
         TextView textView = (TextView) findViewById(R.id.textView2);
         TextView whereGoldTextView = (TextView) findViewById(R.id.textView4);
+        mWordConstraintLayout = (RelativeLayout) findViewById(R.id.wordConstraintLayout);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         //        mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
