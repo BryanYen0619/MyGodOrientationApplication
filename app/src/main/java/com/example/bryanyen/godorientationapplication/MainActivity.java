@@ -104,8 +104,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //        if (isOrientationSensor) {
-            mSensorManager.registerListener(sensorEventListener, mOrientationSensor, SensorManager
-                    .SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(sensorEventListener, mOrientationSensor, SensorManager
+                .SENSOR_DELAY_NORMAL);
         //        } else {
         //            mSensorManager.registerListener(sensorEventListener, mAccelerometerSensor, SensorManager
         //                    .SENSOR_DELAY_NORMAL);
@@ -125,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
         public void onSensorChanged(SensorEvent sensorEvent) {
 
             //            if (isOrientationSensor) {
-                if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
-                    orientationValues = sensorEvent.values;
-                }
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
+                orientationValues = sensorEvent.values;
+            }
             //            } else {
             //                if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             //                    magneticFieldValues = sensorEvent.values;
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     private double getCompassRange(float values) {
         int angle;
         //        if (isOrientationSensor) {
-            angle = 360;    // TYPE_ORIENTATION : 0 ~ 360
+        angle = 360;    // TYPE_ORIENTATION : 0 ~ 360
         //        } else {
         //            angle = 0;      // TYPE_ACCELEROMETER : -180 ~ 180
         //        }
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (values >= 56.25 && values < 78.75) {
             compassOrientation = "東北偏東";
             maxValue = 67.5;
-        } else if (values >= 78.75 && values < 102.25) {
+        } else if (values >= 78.75 && values < 101.25) {
             compassOrientation = "東";
             maxValue = 90;
         } else if (values >= 101.25 && values < 123.75) {
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             maxValue = angle - 135;
         } else if (values >= (angle - 123.75) && values < (angle - 102.25)) {
             compassOrientation = "西南偏西";
-            maxValue = -112.5;
+            maxValue = angle - 112.5;
         } else if (values >= (angle - 102.25) && values < (angle - 78.75)) {
             compassOrientation = "西";
             maxValue = angle - 90;
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         float values;
 
         //        if (isOrientationSensor) {
-            values = orientationValues[0];
+        values = orientationValues[0];
         //        } else {
         //            float[] mValues = new float[3];
         //            float[] rotation = new float[9];
