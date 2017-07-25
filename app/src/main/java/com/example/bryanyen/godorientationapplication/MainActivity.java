@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         godOrientation = DataBaseHelper.getMoneyGodData(getApplication(), lunarCalendar.getLunarMonthOfDay());
 
         textView.setText(lunarCalendar.getLunarDate());
-        whereGoldTextView.setText("財神方位: " + godOrientation);
+        whereGoldTextView.setText("財神方位: " + godOrientation.replace("正", ""));
         mCompassImageView.setDrawingCacheEnabled(true);
 
         mAlphaOutAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_out);
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private double getCompassRange(float values) {
+    private double get16CompassRange(float values) {
         int angle;
         //        if (isOrientationSensor) {
         angle = 360;    // TYPE_ORIENTATION : 0 ~ 360
@@ -223,6 +223,39 @@ public class MainActivity extends AppCompatActivity {
         return maxValue;
     }
 
+    private double get8CompassRange(float values) {
+        int angle = 360;
+        double maxValue = 0;
+        // 判斷座標落在的範圍
+        if ((values <= angle && values > (angle - 22.5)) || (values >= 0 && values < 22.5)) {
+            compassOrientation = "北";
+            maxValue = 0;
+        } else if (values >= 22.5 && values < 67.5) {
+            compassOrientation = "東北";
+            maxValue = 45;
+        } else if (values >= 67.5 && values < 112.5) {
+            compassOrientation = "東";
+            maxValue = 90;
+        } else if (values >= 112.5 && values < 157.5) {
+            compassOrientation = "東南";
+            maxValue = 135;
+        } else if (values >= 157.5 && values < (angle - 157.5)) {
+            compassOrientation = "南";
+            maxValue = 180;
+        } else if (values >= (angle - 157.5) && values < (angle - 112.5)) {
+            compassOrientation = "西南";
+            maxValue = angle - 135;
+        } else if (values >= (angle - 112.5) && values < (angle - 67.5)) {
+            compassOrientation = "西";
+            maxValue = angle - 90;
+        } else if (values >= (angle - 67.5) && values < (angle - 22.5)) {
+            compassOrientation = "西北";
+            maxValue = angle - 45;
+        }
+
+        return maxValue;
+    }
+
     private void getCompassOrientation() {
         float values;
 
@@ -243,21 +276,17 @@ public class MainActivity extends AppCompatActivity {
         //            values = mValues[0];
         //        }
 
-        double maxValue = getCompassRange(values);
+        double maxValue = get8CompassRange(values);
 
         mMoneyGodImageView.setVisibility(View.INVISIBLE);
         //        Log.i(TAG, compassOrientation);
-        mOrientationTextView.setText(compassOrientation);
+        mOrientationTextView.setText(compassOrientation.replace("正", ""));
 
         compassImageAnimation(values);
         godImageShow(compassOrientation, values, maxValue);
     }
 
     private void godImageShow(String compress, float value, double maxValue) {
-        if (compress.length() == 1) {
-            compress = "正" + compress;
-        }
-
         if (compress.equals(godOrientation)) {
             mMoneyGodImageView.setVisibility(View.VISIBLE);
 
