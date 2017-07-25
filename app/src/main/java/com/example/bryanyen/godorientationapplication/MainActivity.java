@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
         mMoneyGodImageView.setVisibility(View.INVISIBLE);
         //        Log.i(TAG, compassOrientation);
-        mOrientationTextView.setText(compassOrientation.replace("正", ""));
+        mOrientationTextView.setText(compassOrientation);
 
         compassImageAnimation(values);
         godImageShow(compassOrientation, values, maxValue);
