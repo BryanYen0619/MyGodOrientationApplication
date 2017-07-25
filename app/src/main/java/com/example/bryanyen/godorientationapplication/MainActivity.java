@@ -290,11 +290,7 @@ public class MainActivity extends AppCompatActivity {
         if (compress.equals(godOrientation)) {
             mMoneyGodImageView.setVisibility(View.VISIBLE);
 
-            if (value < maxValue - 1) {
-                mMoneyGodImageView.startAnimation(mAlphaOutAnimation);
-            }
-
-            if (value > maxValue + 1) {
+            if (value < maxValue + 22.5 && value >= maxValue - 22.5) {
                 mMoneyGodImageView.startAnimation(mAlphaOutAnimation);
             }
         }
