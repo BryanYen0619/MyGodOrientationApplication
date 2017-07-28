@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -16,11 +17,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "main";
+
+    private static final int NEAR_GOD = 1;
+    private static final int LEAVE_GOD = -1;
+    private static final int LEFT_SIDE = 1;
+    private static final int RIGHT_SIDE = -1;
 
     private ImageView mCompassImageView;
     private ImageView mMoneyGodImageView;
@@ -36,16 +44,24 @@ public class MainActivity extends AppCompatActivity {
     //    private float[] accelerometerValues = new float[3];
     //    private float[] magneticFieldValues = new float[3];
     private float[] orientationValues = new float[3];
-
     private float currentDegree = 0f;
+    private double temp = 0;
 
     private String godOrientation;
-    private String compassOrientation = "北";
+    private String compassOrientation = "";
 
     private Animation mAlphaInAnimation;
     private Animation mAlphaOutAnimation;
+    private Animation mTranslateLeftTopInAnimation;
+    private Animation mTranslateLeftTopOutAnimation;
+    private Animation mTranslateRightTopInAnimation;
+    private Animation mTranslateRightTopOutAnimation;
 
     //    private boolean isOrientationSensor = false;
+    private boolean isAnimationInRunning = false;
+    private boolean isAnimationOutRunning = false;
+    private boolean isInGod = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +81,14 @@ public class MainActivity extends AppCompatActivity {
         mOrientationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 
         LunarCalendar lunarCalendar = new LunarCalendar(new Date());
-        godOrientation = DataBaseHelper.getMoneyGodData(getApplication(), lunarCalendar.getLunarMonthOfDay());
+        godOrientation = DataBaseHelper.getMoneyGodData(getApplication(), lunarCalendar.getLunarMonthOfDay()).replace
+                ("正", "");
 
         textView.setText(lunarCalendar.getLunarDate());
-        whereGoldTextView.setText("財神方位: " + godOrientation.replace("正", ""));
+        whereGoldTextView.setText("財神方位: " + godOrientation);
         mCompassImageView.setDrawingCacheEnabled(true);
 
-        mAlphaOutAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha_out);
+        animationInit();
 
         final Button changeSensorButton = (Button) findViewById(R.id.changeSensorButton);
         //        changeSensorButton.setOnClickListener(new View.OnClickListener() {
@@ -256,43 +273,215 @@ public class MainActivity extends AppCompatActivity {
         return maxValue;
     }
 
-    private void getCompassOrientation() {
-        float values;
+    private List<Double> getGodCompassRange(String godOrientation) {
 
-        //        if (isOrientationSensor) {
-        values = orientationValues[0];
-        //        } else {
-        //            float[] mValues = new float[3];
-        //            float[] rotation = new float[9];
-        //            SensorManager.getRotationMatrix(rotation, null, accelerometerValues, magneticFieldValues);
-        //            SensorManager.getOrientation(rotation, mValues);
-        //
-        //            // 極座標轉度
-        //            mValues[0] = (float) Math.toDegrees(mValues[0]);
-        //            //        Log.i(TAG, values[0] + "");
-        //            //values[1] = (float) Math.toDegrees(values[1]);
-        //            //values[2] = (float) Math.toDegrees(values[2]);
-        //
-        //            values = mValues[0];
-        //        }
+        List<Double> list = new ArrayList<>();
+        // 判斷座標落在的範圍
+        switch (godOrientation) {
+            case "北":
+                list.add(337.5);
+                list.add(22.5);
+                break;
+            case "東北":
+                list.add(22.5);
+                list.add(67.5);
+                break;
+            case "東":
+                list.add(67.5);
+                list.add(112.5);
+                break;
+            case "東南":
+                list.add(112.5);
+                list.add(157.5);
+                break;
+            case "南":
+                list.add(157.5);
+                list.add(202.5);
+                break;
+            case "西南":
+                list.add(202.5);
+                list.add(247.5);
+                break;
+            case "西":
+                list.add(247.5);
+                list.add(292.5);
+                break;
+            case "西北":
+                list.add(292.5);
+                list.add(337.5);
+                break;
+            default:
+                break;
+        }
+
+        Log.d(TAG, " god compress min :" + list.get(0));
+        Log.d(TAG, " god compress max :" + list.get(1));
+
+        return list;
+    }
+
+    private void getCompassOrientation() {
+        float values = orientationValues[0];
+        Log.d(TAG, String.valueOf(values));
 
         double maxValue = get8CompassRange(values);
 
-        mMoneyGodImageView.setVisibility(View.INVISIBLE);
-        //        Log.i(TAG, compassOrientation);
-        mOrientationTextView.setText(compassOrientation);
-
         compassImageAnimation(values);
-        godImageShow(compassOrientation, values, maxValue);
+        godImageShow(values, getGodCompassRange(godOrientation));
+
+        mOrientationTextView.setText(compassOrientation);
     }
 
-    private void godImageShow(String compress, float value, double maxValue) {
-        if (compress.equals(godOrientation)) {
-            mMoneyGodImageView.setVisibility(View.VISIBLE);
+    private void godImageShow(float values, List<Double> list) {
+        double compressMin = list.get(0);
+        double compressMax = list.get(1);
 
-            if (value < maxValue + 22.5 && value >= maxValue - 22.5) {
-                mMoneyGodImageView.startAnimation(mAlphaOutAnimation);
+        if (values < compressMax + 5 && values > compressMax) {
+            int te = checkPoint(values, LEFT_SIDE);
+            if (te == NEAR_GOD) {
+                if (!isAnimationInRunning) {
+                    mMoneyGodImageView.startAnimation(mTranslateLeftTopInAnimation);
+                }
+            }
+            if (te == LEAVE_GOD) {
+                if (!isAnimationOutRunning) {
+                    mMoneyGodImageView.startAnimation(mTranslateRightTopOutAnimation);
+                }
             }
         }
+        if (values < compressMin && values > compressMin - 5) {
+            int te = checkPoint(values, RIGHT_SIDE);
+            if (te == NEAR_GOD) {
+                if (!isAnimationInRunning) {
+                    mMoneyGodImageView.startAnimation(mTranslateRightTopInAnimation);
+                }
+            }
+            if (te == LEAVE_GOD) {
+                if (!isAnimationOutRunning) {
+                    mMoneyGodImageView.startAnimation(mTranslateLeftTopOutAnimation);
+                }
+            }
+        }
+        if (values >= compressMin && values <= compressMax) {
+            if (!isAnimationInRunning) {
+                mMoneyGodImageView.startAnimation(mTranslateLeftTopInAnimation);
+            } else {
+                mMoneyGodImageView.setVisibility(View.VISIBLE);
+            }
+            isInGod = true;
+        }
+        if (values >= compressMax + 5 || values <= compressMin - 5) {
+            if (isInGod && !isAnimationOutRunning) {
+                mMoneyGodImageView.startAnimation(mTranslateLeftTopOutAnimation);
+            }
+            mMoneyGodImageView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private int checkPoint(final double range, int eventSide) {
+        int go;
+        if (temp > range) {
+            if (eventSide == LEFT_SIDE) {
+                go = NEAR_GOD;
+            } else {
+                go = LEAVE_GOD;
+            }
+        } else {
+            if (eventSide == LEFT_SIDE) {
+                go = LEAVE_GOD;
+            } else {
+                go = NEAR_GOD;
+            }
+        }
+
+        temp = range;
+
+        return go;
+    }
+
+    private void animationInit() {
+        mTranslateLeftTopInAnimation = AnimationUtils.loadAnimation(this, R.anim.translate_left_top_in);
+        mTranslateLeftTopInAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.INVISIBLE);
+                isAnimationInRunning = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.VISIBLE);
+                isAnimationOutRunning = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        mTranslateLeftTopOutAnimation = AnimationUtils.loadAnimation(this, R.anim.translate_left_top_out);
+        mTranslateLeftTopOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.VISIBLE);
+                isAnimationOutRunning = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.INVISIBLE);
+                isAnimationInRunning = false;
+                isInGod = false;
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        mTranslateRightTopInAnimation = AnimationUtils.loadAnimation(this, R.anim.translate_right_top_in);
+        mTranslateRightTopInAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.INVISIBLE);
+                isAnimationInRunning = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.VISIBLE);
+                isAnimationOutRunning = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        mTranslateRightTopOutAnimation = AnimationUtils.loadAnimation(this, R.anim.translate_right_top_out);
+        mTranslateRightTopOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.VISIBLE);
+                isAnimationOutRunning = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mMoneyGodImageView.setVisibility(View.INVISIBLE);
+                isAnimationInRunning = false;
+                isInGod = false;
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 }
