@@ -30,9 +30,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int LEFT_SIDE = 1;
     private static final int RIGHT_SIDE = -1;
 
-    private ImageView mCompassImageView;
     private ImageView mMoneyGodImageView;
     private TextView mOrientationTextView;
+    private TextView mETextView;
+    private TextView mSTextView;
+    private TextView mWTextView;
+    private TextView mNTextView;
     private RelativeLayout mWordConstraintLayout;
 
     private SensorManager mSensorManager;
@@ -67,13 +70,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mCompassImageView = (ImageView) findViewById(R.id.imageView);
+        
         mMoneyGodImageView = (ImageView) findViewById(R.id.imageView3);
         mOrientationTextView = (TextView) findViewById(R.id.textView);
         TextView textView = (TextView) findViewById(R.id.textView2);
         TextView whereGoldTextView = (TextView) findViewById(R.id.textView4);
         mWordConstraintLayout = (RelativeLayout) findViewById(R.id.wordConstraintLayout);
+        mETextView = (TextView) findViewById(R.id.eTextView);
+        mWTextView = (TextView) findViewById(R.id.wTextView);
+        mSTextView = (TextView) findViewById(R.id.sTextView);
+        mNTextView = (TextView) findViewById(R.id.nTextView);
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         //        mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -89,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
 
         textView.setText(lunarCalendar.getLunarDate());
         whereGoldTextView.setText("財神方位: " + godOrientation);
-        mCompassImageView.setDrawingCacheEnabled(true);
+        //        mCompassImageView.setDrawingCacheEnabled(true);
+        mWordConstraintLayout.setDrawingCacheEnabled(true);
 
         animationInit();
 
@@ -167,7 +174,10 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void compassImageAnimation(float degree) {
+        RotateAnimation raWord;
         RotateAnimation ra;
+
+        // 處理圖片在0~360交換時翻轉問題
         if (Math.abs(degree + currentDegree) > 180) {
             //            Log.d("TEST", "range degree :" + degree);
             //            Log.d("TEST", "range current :" + currentDegree);
@@ -179,17 +189,32 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        // 羅盤動畫
         ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
-        currentDegree = -degree;
-
         ra.setDuration(200);        // 動畫旋轉持續時間ms
         ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
+
+        // 方向文字動畫
+        raWord = new RotateAnimation(-currentDegree, degree, Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f);
+        raWord.setDuration(200);        // 動畫旋轉持續時間ms
+        raWord.setFillAfter(true);      // 設置動畫結束後的保留狀態
 
         LinearInterpolator linearInterpolator = new LinearInterpolator();   // 建立線性旋轉
         ra.setInterpolator(linearInterpolator);
 
-        mCompassImageView.startAnimation(ra);
+        LinearInterpolator linearInterpolatorWord = new LinearInterpolator();   // 建立線性旋轉
+        raWord.setInterpolator(linearInterpolatorWord);
+
+        currentDegree = -degree;
+
+        mWordConstraintLayout.startAnimation(ra);
+
+        mNTextView.setAnimation(raWord);
+        mWTextView.setAnimation(raWord);
+        mSTextView.setAnimation(raWord);
+        mETextView.setAnimation(raWord);
     }
 
     private double get16CompassRange(float values) {
