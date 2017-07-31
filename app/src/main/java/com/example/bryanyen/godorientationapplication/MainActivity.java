@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         mMoneyGodImageView = (ImageView) findViewById(R.id.imageView3);
         mOrientationTextView = (TextView) findViewById(R.id.textView);
         TextView textView = (TextView) findViewById(R.id.textView2);
@@ -89,9 +89,6 @@ public class MainActivity extends AppCompatActivity {
         LunarCalendar lunarCalendar = new LunarCalendar(new Date());
         godOrientation = DataBaseHelper.getMoneyGodData(getApplication(), lunarCalendar.getLunarMonthOfDay()).replace
                 ("正", "");
-
-        // 展示用寫死方位，北方會有問題
-        godOrientation = "東";
 
         textView.setText(lunarCalendar.getLunarDate());
         whereGoldTextView.setText("財神方位: " + godOrientation);
