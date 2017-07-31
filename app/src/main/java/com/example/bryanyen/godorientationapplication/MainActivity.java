@@ -164,8 +164,22 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void compassImageAnimation(float degree) {
-        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
+        RotateAnimation ra;
+        if (Math.abs(degree + currentDegree) > 180) {
+            //            Log.d("TEST", "range degree :" + degree);
+            //            Log.d("TEST", "range current :" + currentDegree);
+
+            if (degree >= 0) {
+                currentDegree = (float) -(degree + 0.1);
+            } else {
+                degree = (float) (Math.abs(currentDegree) + 0.1);
+            }
+        }
+
+        ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
+        currentDegree = -degree;
+
         ra.setDuration(200);        // 動畫旋轉持續時間ms
         ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
 
@@ -173,8 +187,6 @@ public class MainActivity extends AppCompatActivity {
         ra.setInterpolator(linearInterpolator);
 
         mCompassImageView.startAnimation(ra);
-        currentDegree = -degree;
-
     }
 
     private double get16CompassRange(float values) {
