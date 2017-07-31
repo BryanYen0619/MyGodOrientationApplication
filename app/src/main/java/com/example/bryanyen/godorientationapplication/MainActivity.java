@@ -84,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         godOrientation = DataBaseHelper.getMoneyGodData(getApplication(), lunarCalendar.getLunarMonthOfDay()).replace
                 ("正", "");
 
+        // 展示用寫死方位，北方會有問題
+        godOrientation = "東";
+
         textView.setText(lunarCalendar.getLunarDate());
         whereGoldTextView.setText("財神方位: " + godOrientation);
         mCompassImageView.setDrawingCacheEnabled(true);
