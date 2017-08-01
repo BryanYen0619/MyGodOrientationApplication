@@ -171,29 +171,26 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void compassImageAnimation(float degree) {
-        RotateAnimation raWord;
-        RotateAnimation ra;
-
         // 處理圖片在0~360交換時翻轉問題
         if (Math.abs(degree + currentDegree) > 180) {
             //            Log.d("TEST", "range degree :" + degree);
             //            Log.d("TEST", "range current :" + currentDegree);
 
             if (degree >= 0) {
-                currentDegree = (float) -(degree + 0.1);
+                currentDegree = (float) -(degree + 0.01);
             } else {
-                degree = (float) (Math.abs(currentDegree) + 0.1);
+                degree = (float) (Math.abs(currentDegree) + 0.01);
             }
         }
 
         // 羅盤動畫
-        ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
+        RotateAnimation ra = new RotateAnimation(currentDegree, -degree, Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
         ra.setDuration(200);        // 動畫旋轉持續時間ms
         ra.setFillAfter(true);      // 設置動畫結束後的保留狀態
 
         // 方向文字動畫
-        raWord = new RotateAnimation(-currentDegree, degree, Animation.RELATIVE_TO_SELF, 0.5f,
+        RotateAnimation raWord = new RotateAnimation(-currentDegree, degree, Animation.RELATIVE_TO_SELF, 0.5f,
                 Animation.RELATIVE_TO_SELF, 0.5f);
         raWord.setDuration(200);        // 動畫旋轉持續時間ms
         raWord.setFillAfter(true);      // 設置動畫結束後的保留狀態
@@ -316,8 +313,10 @@ public class MainActivity extends AppCompatActivity {
         // 判斷座標落在的範圍
         switch (godOrientation) {
             case "北":
-                list.add(337.5);
+                list.add(0.0);
                 list.add(22.5);
+                list.add(337.5);
+                list.add(360.0);
                 break;
             case "東北":
                 list.add(22.5);
@@ -370,48 +369,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void godImageShow(float values, List<Double> list) {
-        double compressMin = list.get(0);
-        double compressMax = list.get(1);
+        boolean isNCompress;
+        double compressMin = -1;
+        double compressMax = -1;
+        double compressMin2 = -1;
+        double compressMax2 = -1;
+
+        if (list.size() == 4) {
+            isNCompress = true;
+            compressMin2 = list.get(2);
+            compressMax2 = list.get(3);
+        } else {
+            isNCompress = false;
+        }
+
+        compressMin = list.get(0);
+        compressMax = list.get(1);
 
         if (values < compressMax + 5 && values > compressMax) {
-            int te = checkPoint(values, LEFT_SIDE);
-            if (te == NEAR_GOD) {
-                if (!isAnimationInRunning) {
-                    mMoneyGodImageView.startAnimation(mTranslateLeftTopInAnimation);
-                }
-            }
-            if (te == LEAVE_GOD) {
-                if (!isAnimationOutRunning) {
-                    mMoneyGodImageView.startAnimation(mTranslateRightTopOutAnimation);
+            godImageInLeftSideAnimationController(values);
+        } else {
+            if (isNCompress) {
+                if (values < compressMax2 + 5 && values > compressMax2) {
+                    godImageInLeftSideAnimationController(values);
                 }
             }
         }
         if (values < compressMin && values > compressMin - 5) {
-            int te = checkPoint(values, RIGHT_SIDE);
-            if (te == NEAR_GOD) {
-                if (!isAnimationInRunning) {
-                    mMoneyGodImageView.startAnimation(mTranslateRightTopInAnimation);
-                }
-            }
-            if (te == LEAVE_GOD) {
-                if (!isAnimationOutRunning) {
-                    mMoneyGodImageView.startAnimation(mTranslateLeftTopOutAnimation);
+            godImageInRightSideAnimationController(values);
+        } else {
+            if (isNCompress) {
+                if (values < compressMin2 && values > compressMin2 - 5) {
+                    godImageInRightSideAnimationController(values);
                 }
             }
         }
         if (values >= compressMin && values <= compressMax) {
-            if (!isAnimationInRunning) {
-                mMoneyGodImageView.startAnimation(mTranslateLeftTopInAnimation);
-            } else {
-                mMoneyGodImageView.setVisibility(View.VISIBLE);
+            godImageInCenterAnimationController();
+        } else {
+            if (isNCompress) {
+                if (values >= compressMin2 && values <= compressMax2) {
+                    godImageInCenterAnimationController();
+                }
             }
-            isInGod = true;
         }
         if (values >= compressMax + 5 || values <= compressMin - 5) {
-            if (isInGod && !isAnimationOutRunning) {
-                mMoneyGodImageView.startAnimation(mTranslateLeftTopOutAnimation);
+            if (isNCompress) {
+                if (values >= compressMax2 + 5 || values <= compressMin2 - 5) {
+                    godImageOutAnimationController();
+                }
+            } else {
+                godImageOutAnimationController();
             }
-            mMoneyGodImageView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -520,5 +529,50 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    private void godImageInLeftSideAnimationController(float values) {
+        int te = checkPoint(values, LEFT_SIDE);
+        if (te == NEAR_GOD) {
+            if (!isAnimationInRunning) {
+                mMoneyGodImageView.startAnimation(mTranslateLeftTopInAnimation);
+            }
+        }
+        if (te == LEAVE_GOD) {
+            if (!isAnimationOutRunning) {
+                mMoneyGodImageView.startAnimation(mTranslateRightTopOutAnimation);
+            }
+        }
+    }
+
+    private void godImageInRightSideAnimationController(float values) {
+        int te = checkPoint(values, RIGHT_SIDE);
+        if (te == NEAR_GOD) {
+            if (!isAnimationInRunning) {
+                mMoneyGodImageView.startAnimation(mTranslateRightTopInAnimation);
+            }
+        }
+        if (te == LEAVE_GOD) {
+            if (!isAnimationOutRunning) {
+                mMoneyGodImageView.startAnimation(mTranslateLeftTopOutAnimation);
+            }
+        }
+    }
+
+    private void godImageInCenterAnimationController() {
+        if (!isAnimationInRunning) {
+            mMoneyGodImageView.startAnimation(mTranslateLeftTopInAnimation);
+        } else {
+            mMoneyGodImageView.setVisibility(View.VISIBLE);
+        }
+        isInGod = true;
+    }
+
+    private void godImageOutAnimationController() {
+        if (isInGod && !isAnimationOutRunning) {
+            mMoneyGodImageView.startAnimation(mTranslateLeftTopOutAnimation);
+        }
+        mMoneyGodImageView.setVisibility(View.INVISIBLE);
     }
 }
